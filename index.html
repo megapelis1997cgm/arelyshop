@@ -56,6 +56,11 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* Style for drag-over effect */
+        .drag-over {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -65,15 +70,15 @@
         </h1>
 
         <!-- File Upload Section -->
-        <div class="mb-8 p-6 border-2 border-dashed border-blue-300 rounded-lg text-center bg-blue-50">
+        <div id="dropZone" class="mb-8 p-6 border-2 border-dashed border-blue-300 rounded-lg text-center bg-blue-50 transition-colors duration-200">
             <label for="fileInput" class="cursor-pointer">
                 <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
-                <div class="flex flex-col items-center justify-center py-4">
+                <div class="flex flex-col items-center justify-center py-4 pointer-events-none">
                     <svg class="w-12 h-12 text-blue-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                     </svg>
                     <p class="text-lg font-semibold text-blue-700">Haz clic para seleccionar fotos</p>
-                    <p class="text-sm text-gray-500 mt-1">Arrastra y suelta tus imágenes aquí (JPG, PNG, GIF)</p>
+                    <p class="text-sm text-gray-500 mt-1">O arrastra y suelta tus imágenes aquí (JPG, PNG, GIF)</p>
                 </div>
             </label>
         </div>
@@ -126,6 +131,7 @@
 
     <script>
         const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
         const imageGallery = document.getElementById('imageGallery');
         const messageBox = document.getElementById('messageBox');
         const messageText = document.getElementById('messageText');
@@ -158,37 +164,27 @@
                 const ctx = canvas.getContext('2d');
                 
                 const drawContent = () => {
-                    // Set canvas to 1000x1000
                     canvas.width = 1000;
                     canvas.height = 1000;
-
-                    // Draw a white background for JPG format
                     ctx.fillStyle = '#ffffff';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    // Calculate image aspect ratio to "cover" the canvas
                     const canvasAspect = canvas.width / canvas.height;
                     const imgAspect = imgElement.naturalWidth / imgElement.naturalHeight;
                     let drawWidth, drawHeight, x, y;
-
-                    if (imgAspect > canvasAspect) { // Image is wider
+                    if (imgAspect > canvasAspect) {
                         drawHeight = canvas.height;
                         drawWidth = drawHeight * imgAspect;
                         x = (canvas.width - drawWidth) / 2;
                         y = 0;
-                    } else { // Image is taller or same aspect
+                    } else {
                         drawWidth = canvas.width;
                         drawHeight = drawWidth / imgAspect;
                         x = 0;
                         y = (canvas.height - drawHeight) / 2;
                     }
-                    
-                    // Draw the scaled and centered image
                     ctx.drawImage(imgElement, x, y, drawWidth, drawHeight);
-                    
-                    // --- Watermark ---
                     const watermarkText = "ARELYSHOP";
-                    const watermarkFontSize = Math.max(30, canvas.width * 0.08); // 8% of canvas width
+                    const watermarkFontSize = Math.max(30, canvas.width * 0.08);
                     ctx.font = `bold ${watermarkFontSize}px Inter, sans-serif`;
                     ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
                     ctx.textAlign = 'center';
@@ -198,22 +194,17 @@
                     ctx.rotate(-Math.PI / 4);
                     ctx.fillText(watermarkText, 0, 0);
                     ctx.restore();
-
-                    // --- Price Sticker ---
                     const padding = 12;
                     const borderRadius = 10;
-                    const fontSize = 48; // Fixed font size for 1000px canvas
+                    const fontSize = 48;
                     ctx.font = `bold ${fontSize}px Inter, sans-serif`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    
                     const textMetrics = ctx.measureText(priceText);
                     const rectWidth = textMetrics.width + 2 * padding;
                     const rectHeight = fontSize + padding;
                     const rectX = (canvas.width - rectWidth) / 2;
-                    const rectY = canvas.height - rectHeight - 20; // Position from bottom
-
-                    // Draw rounded rectangle for sticker
+                    const rectY = canvas.height - rectHeight - 20;
                     ctx.fillStyle = 'rgba(220, 38, 38, 0.8)';
                     ctx.beginPath();
                     ctx.moveTo(rectX + borderRadius, rectY);
@@ -227,15 +218,10 @@
                     ctx.quadraticCurveTo(rectX, rectY, rectX + borderRadius, rectY);
                     ctx.closePath();
                     ctx.fill();
-
-                    // Draw price text
                     ctx.fillStyle = 'white';
-                    ctx.fillText(priceText, rectX + rectWidth / 2, rectY + rectHeight / 2 + 4); // Adjust text position slightly
-                    
-                    // Resolve with JPG data URL
+                    ctx.fillText(priceText, rectX + rectWidth / 2, rectY + rectHeight / 2 + 4);
                     resolve(canvas.toDataURL('image/jpeg', 0.9));
                 };
-
                 if (!imgElement.complete) {
                     imgElement.onload = drawContent;
                 } else {
@@ -253,10 +239,9 @@
             document.body.removeChild(a);
         }
 
-        fileInput.addEventListener('change', (event) => {
-            const files = event.target.files;
+        // Central function to handle file processing
+        function handleFiles(files) {
             if (files.length === 0) return;
-
             globalDownloadSection.style.display = 'block';
 
             Array.from(files).forEach(file => {
@@ -268,7 +253,6 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const base64ImageData = e.target.result;
-
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'image-container';
                     const imageWrapper = document.createElement('div');
@@ -281,7 +265,6 @@
                     priceSticker.textContent = '$0.00';
                     imageWrapper.appendChild(img);
                     imageWrapper.appendChild(priceSticker);
-
                     const priceInput = document.createElement('input');
                     priceInput.type = 'text';
                     priceInput.placeholder = 'Precio';
@@ -305,7 +288,7 @@
                     downloadIndividualButton.innerHTML = '<span class="mr-2">⬇️</span> Descargar con Precio';
                     downloadIndividualButton.addEventListener('click', async () => {
                         const originalFileName = file.name.split('.').slice(0, -1).join('.');
-                        const newFileName = `${originalFileName}_con_precio.jpg`; // Changed to JPG
+                        const newFileName = `${originalFileName}_con_precio.jpg`;
                         const dataUrl = await renderImageWithPriceOnCanvas(img, priceSticker.textContent);
                         triggerDownload(dataUrl, newFileName);
                     });
@@ -317,6 +300,27 @@
                 };
                 reader.readAsDataURL(file);
             });
+        }
+        
+        // Event listener for file input click
+        fileInput.addEventListener('change', (event) => {
+            handleFiles(event.target.files);
+        });
+
+        // Drag and Drop Event Listeners
+        dropZone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropZone.classList.remove('drag-over');
+            handleFiles(event.dataTransfer.files);
         });
 
         downloadAllButton.addEventListener('click', async () => {
@@ -334,7 +338,7 @@
                 const imgElement = container.querySelector('img');
                 const priceSticker = container.querySelector('.price-sticker');
                 const originalFileName = imgElement.alt.split('.').slice(0, -1).join('.');
-                const newFileName = `${originalFileName}_con_precio_${i + 1}.jpg`; // Changed to JPG
+                const newFileName = `${originalFileName}_con_precio_${i + 1}.jpg`;
 
                 try {
                     const dataUrl = await renderImageWithPriceOnCanvas(imgElement, priceSticker.textContent);
@@ -347,7 +351,7 @@
                     const link = document.createElement('a');
                     link.href = dataUrl;
                     link.download = newFileName;
-                    link.textContent = `Descargar ${originalFileName}.jpg`; // Changed to JPG
+                    link.textContent = `Descargar ${originalFileName}.jpg`;
                     link.className = 'text-blue-600 hover:underline text-center';
                     downloadLinkDiv.appendChild(thumbnail);
                     downloadLinkDiv.appendChild(link);
