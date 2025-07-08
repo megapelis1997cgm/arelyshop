@@ -63,69 +63,81 @@
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
-    <div class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg">
-        <h1 class="text-3xl font-extrabold text-gray-900 mb-6 text-center">
-            Sube Tus Fotos y Añade Precios
-        </h1>
-
-        <!-- File Upload Section -->
-        <div id="dropZone" class="mb-8 p-6 border-2 border-dashed border-blue-300 rounded-lg text-center bg-blue-50 transition-colors duration-200">
-            <label for="fileInput" class="cursor-pointer">
-                <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
-                <div class="flex flex-col items-center justify-center py-4 pointer-events-none">
-                    <svg class="w-12 h-12 text-blue-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                    </svg>
-                    <p class="text-lg font-semibold text-blue-700">Haz clic para seleccionar fotos</p>
-                    <p class="text-sm text-gray-500 mt-1">O arrastra y suelta tus imágenes aquí (JPG, PNG, GIF)</p>
-                </div>
-            </label>
+<body class="bg-f0f2f5">
+    <!-- Header with Logo -->
+    <header class="bg-slate-900 p-4 shadow-md">
+        <div class="max-w-4xl mx-auto flex justify-center">
+            <img src="https://dcdn-us.mitiendanube.com/stores/004/546/736/themes/common/logo-660776128-1736645739-9bb5db1715d3b799cdf782b0f0815d541736645739.webp?0" 
+                 alt="Logo ArelyShop" 
+                 class="h-12"
+                 onerror="this.onerror=null; this.src='https://placehold.co/200x50/1e293b/ffffff?text=ArelyShop';">
         </div>
+    </header>
 
-        <!-- Global Download Button -->
-        <div class="text-center mb-6" id="globalDownloadSection" style="display: none;">
-            <button id="downloadAllButton" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 shadow-md flex items-center justify-center mx-auto">
-                <span class="mr-2">⬇️</span> Descargar Todas las Fotos con Precios
+    <main class="p-4 md:p-8">
+        <div class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg">
+            <h1 class="text-3xl font-extrabold text-gray-900 mb-6 text-center">
+                Sube Tus Fotos y Añade Precios
+            </h1>
+
+            <!-- File Upload Section -->
+            <div id="dropZone" class="mb-8 p-6 border-2 border-dashed border-blue-300 rounded-lg text-center bg-blue-50 transition-colors duration-200">
+                <label for="fileInput" class="cursor-pointer">
+                    <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
+                    <div class="flex flex-col items-center justify-center py-4 pointer-events-none">
+                        <svg class="w-12 h-12 text-blue-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <p class="text-lg font-semibold text-blue-700">Haz clic para seleccionar fotos</p>
+                        <p class="text-sm text-gray-500 mt-1">O arrastra y suelta tus imágenes aquí (JPG, PNG, GIF)</p>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Global Download Button -->
+            <div class="text-center mb-6" id="globalDownloadSection" style="display: none;">
+                <button id="downloadAllButton" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 shadow-md flex items-center justify-center mx-auto">
+                    <span class="mr-2">⬇️</span> Descargar Todas las Fotos con Precios
+                </button>
+            </div>
+
+            <!-- Display Area for Uploaded Photos -->
+            <div id="imageGallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Images will be dynamically added here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Message Box for alerts -->
+    <div id="messageBox" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+            <p id="messageText" class="text-lg font-semibold mb-4"></p>
+            <button id="closeMessageBox" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
+                Cerrar
             </button>
         </div>
+    </div>
 
-        <!-- Display Area for Uploaded Photos -->
-        <div id="imageGallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Images will be dynamically added here -->
-        </div>
-
-        <!-- Message Box for alerts -->
-        <div id="messageBox" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
-            <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
-                <p id="messageText" class="text-lg font-semibold mb-4"></p>
-                <button id="closeMessageBox" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
+    <!-- Download Links Modal -->
+    <div id="downloadModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-4 text-center">Descargas Disponibles</h2>
+            <div id="downloadLinksContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Download links will be added here -->
+            </div>
+            <div class="text-center mt-6">
+                <button id="closeDownloadModal" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
                     Cerrar
                 </button>
             </div>
         </div>
+    </div>
 
-        <!-- Download Links Modal -->
-        <div id="downloadModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
-            <div class="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-                <h2 class="text-2xl font-bold mb-4 text-center">Descargas Disponibles</h2>
-                <div id="downloadLinksContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Download links will be added here -->
-                </div>
-                <div class="text-center mt-6">
-                    <button id="closeDownloadModal" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Loading Modal -->
-        <div id="loadingModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
-            <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center flex flex-col items-center">
-                <div class="loading-spinner mb-4"></div>
-                <p class="text-lg font-semibold">Generando imágenes para descargar...</p>
-            </div>
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center flex flex-col items-center">
+            <div class="loading-spinner mb-4"></div>
+            <p class="text-lg font-semibold">Generando imágenes para descargar...</p>
         </div>
     </div>
 
@@ -262,7 +274,7 @@
                     img.alt = file.name;
                     const priceSticker = document.createElement('span');
                     priceSticker.className = 'price-sticker';
-                    priceSticker.textContent = '$0.00';
+                    priceSticker.textContent = 'Bs. 0.00'; // Updated currency
                     imageWrapper.appendChild(img);
                     imageWrapper.appendChild(priceSticker);
                     const priceInput = document.createElement('input');
@@ -270,14 +282,13 @@
                     priceInput.placeholder = 'Precio';
                     priceInput.className = 'p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-center';
                     priceInput.addEventListener('input', (event) => {
-                        let value = event.target.value.trim();
+                        let value = event.target.value.trim().replace(/[^0-9.,]/g, '').replace(',', '.');
                         if (value === '' || isNaN(parseFloat(value))) {
                             priceSticker.textContent = 'Precio Inválido';
                             priceSticker.style.backgroundColor = 'rgba(255, 0, 0, 0.7)';
                         } else {
-                            const formattedPrice = parseFloat(value).toLocaleString('es-BO', {
-                                style: 'currency', currency: 'BOB', minimumFractionDigits: 2
-                            });
+                            // Updated currency formatting
+                            const formattedPrice = `Bs. ${parseFloat(value).toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                             priceSticker.textContent = formattedPrice;
                             priceSticker.style.backgroundColor = 'rgba(220, 38, 38, 0.8)';
                         }
